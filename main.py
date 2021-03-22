@@ -5,11 +5,10 @@ from csv import writer
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
-import argparse
 import re
 
 # Change saved values below. Pass the base url and label for data maintenance.
-quick_url = 'https://www.otomoto.pl/osobowe/mercedes-benz/'
+quick_url = 'https://www.otomoto.pl/osobowe/suzuki/?limit&page=42'
 
 csv_headers = 'id,price,year,engine,fuel,mileage,brand,model,loc,url'
 
