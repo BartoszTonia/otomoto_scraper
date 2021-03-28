@@ -8,7 +8,7 @@ import requests
 import re
 
 # Change saved values below. Pass the base url and label for data maintenance.
-quick_url = 'https://www.otomoto.pl/osobowe/suzuki/?limit&page=42'
+quick_url = 'https://www.otomoto.pl/osobowe/mercedes/?limit&page=42'
 
 csv_headers = 'id,price,year,engine,fuel,mileage,brand,model,loc,url'
 
