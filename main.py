@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime, timedelta
 from time import sleep, time
 from pathlib import Path
@@ -8,11 +9,13 @@ import requests
 import re
 
 # Change saved values below. Pass the base url and label for data maintenance.
-quick_url = 'https://www.otomoto.pl/osobowe/suzuki/?limit&page=42'
+quick_url = 'https://www.otomoto.pl/osobowe/austin/'
 
 csv_headers = 'id,price,year,engine,fuel,mileage,brand,model,loc,url'
 
+Path('out').mkdir(parents=True, exist_ok=True)
 temp_path = Path('lib/temp.csv')
+temp_path.parent.mkdir(parents=True, exist_ok=True)
 if not temp_path.exists():
     temp_path.touch()
     temp_path.write_text(csv_headers + '\n')
@@ -111,7 +114,7 @@ class Process:
             else:
                 return url, 1
         else:
-            return self.url_site + '?limit=250', 1
+            return self.url_site + '?search', 1
 
     def pagination(self):
         url, page = self.validate_page()
@@ -168,29 +171,58 @@ class Process:
         sleep(0.01)
 
 
-t = time()
-
-Process(quick_url)
-
-elapsed = time() - t
-time_format = timedelta(seconds=elapsed)
-print('>>> Executed in {} s'.format(time_format, 2))
-
-# def write_and_clean(loc):
-#     df = prepare_df(temp_path)
-#     create_db(df, loc)
-#     if Path(loc).exists():
-#         temp_path.unlink()
+def create_db( df, location ):
+    try:
+        df.to_csv(location, index=False)
+        print('File was successfully created -- {}'.format(location))
+    except ValueError:
+        pass
 
 
-# def main():
-#     try:
-#         t = time()
-#         timestamp = datetime.fromtimestamp(t).strftime('_%Y%m%d_%H_%M_%S')
-#
-#         url, label = args_parser()
-#         process = Process(url, label)
-#
-#         loc = 'out/{}_{}_total{}.csv'.format(label, process.total, timestamp)
-#         write_and_clean(loc)
+def write_and_clean(loc):
+    df = pd.read_csv(temp_path, encoding="utf-8")
+    create_db(df, loc)
+    if Path(loc).exists():
+        temp_path.unlink()
 
+
+def main():
+    try:
+        t = time()
+        timestamp = datetime.fromtimestamp(t).strftime('_%Y%m%d_%H_%M_%S')
+
+        url, label = args_parser()
+        Process(url)
+
+        loc = 'out/{}{}.csv'.format(label, timestamp)
+        write_and_clean(loc)
+
+    except TypeError:
+        print('\n')
+        pass
+    except KeyboardInterrupt:
+        print(' [+] Keyboard Interrupt. Closing program.')
+        exit()
+
+
+def args_parser():
+    description = "Scrape engine creating cvs files for further machine learning analysis"
+    url_h = "Paste your url"
+
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-u', '--url', dest="url", type=str, help=url_h)
+    parser.add_argument('-l', '--label', dest="label", type=str, help=url_h)
+
+    args = parser.parse_args()
+    url = str(args.url)
+    label = str(args.label)
+
+    if args.url is None:
+        url = quick_url
+
+    if args.label is None:
+        label = 'label'
+
+    return url, label
+
+main()
