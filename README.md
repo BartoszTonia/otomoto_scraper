@@ -18,4 +18,14 @@ apt-get install python3-pip
 ```
 
 ### Installation :books:
-1. Install all dependencies using ``` pip3 install -r requirements.txt ```
+1. Install all dependencies using 
+```
+ pip3 install -r requirements.txt 
+```
+
+
+### Run
+Try according to line below
+```
+python3 main.py -url "https://www.otomoto.pl/osobowe/ferrari/" -l ferrari
+```
